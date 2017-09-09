@@ -355,14 +355,13 @@ class OMPv4(OMP):
 		:raises: ClientError, ServerError
 		"""
 		m_return = {}
-
 		for x in self.get_targets().findall("target"):
 			m_return[x.find("name").text] = x.get("id")
 
-			if name:
-				return {name: m_return[name]}
-			else:
-				return m_return
+		if name:
+			return {name: m_return[name]}
+		else:
+			return m_return
 
 	# ----------------------------------------------------------------------
 	def get_tasks(self, task_id=None):
@@ -422,7 +421,6 @@ class OMPv4(OMP):
 		"""
 
 		m_return = {}
-
 		for x in self.get_tasks().findall("task"):
 			m_return[x.find("name").text] = x.get("id")
 

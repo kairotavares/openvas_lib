@@ -740,6 +740,53 @@ class VulnscanManager(object):
 		return m_target_id
 
 	# ----------------------------------------------------------------------
+	def create_task(self, job_name, target_id, config, schedule, comment):
+		"""
+        Creates a task in OpenVAS.
+
+        :param job_name: name to the task
+        :type job_name: str
+
+        :param target_id: target to scan
+        :type target_id: str
+
+        :param config: config (profile) name
+        :type config: str
+
+        :param schedule: schedule ID to use.
+        :type schedule: str
+
+        :param comment: comment to add to task
+        :type comment: str
+
+        :return: the ID of the task created.
+        :rtype: str
+
+        :raises: ClientError, ServerError TODO
+        """
+		try:
+			m_task_id = self.__manager.create_task(job_name, target_id, config=config,
+												   schedule=schedule, comment=comment)
+		except ServerError as e:
+			raise VulnscanScanError("The target selected doesnn't exist in the server. Error: %s" % e.message)
+		return m_task_id
+
+	# ----------------------------------------------------------------------
+	def start_task(self, task_id):
+		"""
+		Start a task.
+
+		:param task_id: ID of task to start.
+		:type task_id: str
+
+		:raises: ClientError, ServerError
+		"""
+
+		m_response = self.__manager.start_task(task_id)
+
+		return m_response
+
+	# ----------------------------------------------------------------------
 	def delete_scan(self, task_id):
 		"""
         Delete specified scan ID in the OpenVAS server.
@@ -909,6 +956,21 @@ class VulnscanManager(object):
 		return None
 
 	# ----------------------------------------------------------------------
+	def is_task_running(self, task_id):
+		"""
+		Return true if task is running
+
+		:param task_id: ID of task to start.
+		:type task_id: str
+
+		:return: bool
+		:rtype: bool
+
+		:raises: ClientError, ServerError
+		"""
+		return self.__manager.is_task_running(task_id)
+
+	# ----------------------------------------------------------------------
 	@property
 	def get_profiles(self):
 		"""
@@ -916,6 +978,15 @@ class VulnscanManager(object):
         :rtype: {profile_name: ID}
         """
 		return self.__manager.get_configs_ids()
+
+	# ----------------------------------------------------------------------
+	@property
+	def get_all_targets(self):
+		"""
+        :return: All targets.
+        :rtype: {target_name: ID}
+        """
+		return self.__manager.get_targets_ids()
 
 	# ----------------------------------------------------------------------
 	@property
